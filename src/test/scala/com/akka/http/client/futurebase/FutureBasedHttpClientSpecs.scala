@@ -23,7 +23,8 @@ object FutureBasedHttpClientSpecs {
 
   private val httpClient = FutureBasedHttpClient()(testActorSystem)
 
-  private val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(new ForkJoinPool(1))
+  private val parallelism = 1
+  private val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(new ForkJoinPool(parallelism))
 
   def main(args: Array[String]): Unit = {
 

@@ -1,13 +1,12 @@
 package com.akka.http.client.futurebase
 
 import akka.actor.{ActorSystem, Props}
-import com.akka.http.client.futurebase.MasterActor.RequestNotification
+import com.akka.http.client.futurebase.MasterActor.{Heartbeat, KillEvent, RequestNotification}
 import com.typesafe.config.ConfigFactory
 
 object FutureBasedHttpClientActorSpecs {
 
-
-  val actorSystem = ActorSystem.create("nlu-actor-system", ConfigFactory.parseString(
+  val actorSystem: ActorSystem = ActorSystem.create("nlu-actor-system", ConfigFactory.parseString(
     """
       |akka {
       |  loglevel = "DEBUG"
@@ -22,7 +21,8 @@ object FutureBasedHttpClientActorSpecs {
 
   def main(args: Array[String]): Unit = {
 
-    masterActor ! RequestNotification(apiEndpoint)
-
+    Seq(RequestNotification("crap.com"), KillEvent, Heartbeat, RequestNotification(apiEndpoint)).foreach { event =>
+      masterActor ! event
+    }
   }
 }

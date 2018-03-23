@@ -9,6 +9,8 @@ import akka.util.ByteString
 class FutureBasedHttpClientActor extends Actor with ActorLogging {
 
   import FutureBasedHttpClientActor._
+
+  //could be used separate ExecutionContext for http calls
   import context.dispatcher
 
   final implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(context.system))
@@ -19,16 +21,8 @@ class FutureBasedHttpClientActor extends Actor with ActorLogging {
 
     case GetEvent(apiEndpoint) =>
       http.singleRequest(HttpRequest(uri = apiEndpoint))
-        .flatMap(_.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String)).map(d => GetResponse(d))
-
-    case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-      entity.dataBytes.runFold(ByteString(""))(_ ++ _).foreach { body =>
-        log.info("Got response, body: " + body.utf8String)
-      }
-
-    case resp@HttpResponse(code, _, _, _) =>
-      log.info("Request failed, response code: " + code)
-      resp.discardEntityBytes()
+        .flatMap(_.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String))
+        .map(d => GetResponse(d))
 
   }
 
