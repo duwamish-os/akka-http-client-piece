@@ -1,9 +1,8 @@
-package com.akka.http.client
+package com.akka.http.client.futurebase
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.stream.Materializer
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
@@ -11,20 +10,15 @@ trait HttpClient {
   def get(apiEndpoint: String): Future[HttpResponse]
 }
 
-class FutureBasedHttpClient()(implicit actorSystem: ActorSystem, materializer: Materializer) extends HttpClient {
+class FutureBasedHttpClient()(implicit actorSystem: ActorSystem) extends HttpClient {
 
-  def get(apiEndpoint: String): Future[HttpResponse] = {
+  //can just do import actorSystem.dispatcher
+  implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
-    implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
+  def get(apiEndpoint: String): Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = apiEndpoint))
 
-    val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = apiEndpoint))
-
-    responseFuture
-
-  }
 }
 
 object FutureBasedHttpClient {
-  def apply()(implicit actorSystem: ActorSystem, materializer: Materializer): FutureBasedHttpClient =
-    new FutureBasedHttpClient()
+  def apply()(implicit actorSystem: ActorSystem): FutureBasedHttpClient = new FutureBasedHttpClient()
 }
