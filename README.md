@@ -13,3 +13,14 @@ as well as when many small tasks are submitted to the pool from external clients
 Especiallywhen setting asyncMode to true in constructors, ForkJoinPools may also be appropriate for use with
 event-style tasks that are never joined.
 ```
+
+Future based client
+-------------------
+
+for `FutureBasedHttpClientSpecs`
+
+![](future-based-http-client.png)
+
+`FutureBasedHttpClientActorSpecs`
+
+![](future-based-http-client-2.png)
